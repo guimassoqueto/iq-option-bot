@@ -10,82 +10,83 @@ ACTIVES = input('Pair: ').upper()
 BALANCE = iqoption.get_balance()
 
 loop = True
+
 # id, from, at, to, open, close, min, max, volume
 if check:
     while loop:
-        last_six = iqoption.get_candles(ACTIVES, 60, 6, time())
+        last_six = iqoption.get_candles(ACTIVES, 300, 6, time())
         [c5, c4, c3, c2, c1, c0] = last_six
         if c0['to'] == round(time()):
             if consecutive_down(last_six):
                 loop = False              
-                success, id = iqoption.buy(BALANCE * 0.005, ACTIVES, 'call', 1)
+                success, id = iqoption.buy(BALANCE * 0.01, ACTIVES, 'call', 5)
                 entry_time = time()
 
                 if success: 
-                    status, profit = iqoption.check_win_v3(id)
-                    if status == 'loose':
-                        success, id = iqoption.buy(BALANCE * 0.01, ACTIVES, 'call', 1)
+                    status1, profit1 = iqoption.check_win_v3(id)
+                    if status1 == 'loose':
+                        success, id = iqoption.buy(BALANCE * 0.02, ACTIVES, 'call', 5)
                         if success: 
-                            status, profit = iqoption.check_win_v3(id)
-                            if status == 'loose':
-                                success, id = iqoption.buy(BALANCE * 0.02, ACTIVES, 'call', 1)
+                            status2, profit2 = iqoption.check_win_v3(id)
+                            if status2 == 'loose':
+                                success, id = iqoption.buy(BALANCE * 0.04, ACTIVES, 'call', 5)
                                 if success: 
-                                    status, profit = iqoption.check_win_v3(id)
-                                    if status == 'loose':
+                                    status3, profit3 = iqoption.check_win_v3(id)
+                                    if status3 == 'loose':
                                         BALANCE = iqoption.get_balance()
-                                        print(f"Lose ${profit}")
+                                        print(f"Lose ${profit1 + profit2 + profit3}")
                                         loop = True
                                         continue
                                     else: 
                                         BALANCE = iqoption.get_balance()
-                                        print(f"Win ${profit}")
+                                        print(f"Win ${profit3}")
                                         loop = True
                                         continue
                             else: 
                                 BALANCE = iqoption.get_balance()
-                                print(f"Win ${profit}")
+                                print(f"Win ${profit2}")
                                 loop = True
                                 continue
                     else: 
                         BALANCE = iqoption.get_balance()
-                        print(f"Win ${profit}")
+                        print(f"Win ${profit1}")
                         loop = True
                         continue
             elif consecutive_up(last_six):
                 loop = False
-                success, id = iqoption.buy(BALANCE * 0.005, ACTIVES, 'put', 1)
+                success, id = iqoption.buy(BALANCE * 0.01, ACTIVES, 'put', 5)
                 entry_time = time()
                 
                 if success: 
-                    status, profit = iqoption.check_win_v3(id)
-                    if status == 'loose':
-                        success, id = iqoption.buy(BALANCE * 0.01, ACTIVES, 'put', 1)
+                    status1, profit1 = iqoption.check_win_v3(id)
+                    if status1 == 'loose':
+                        success, id = iqoption.buy(BALANCE * 0.02, ACTIVES, 'put', 5)
                         entry_time = time()
                         if success: 
-                            status, profit = iqoption.check_win_v3(id)
-                            if status == 'loose':
-                                success, id = iqoption.buy(BALANCE * 0.02, ACTIVES, 'put', 1)
+                            status2, profit2 = iqoption.check_win_v3(id)
+                            if status2 == 'loose':
+                                success, id = iqoption.buy(BALANCE * 0.04, ACTIVES, 'put', 5)
                                 entry_time = time()
                                 if success: 
-                                    status, profit = iqoption.check_win_v3(id)
-                                    if status == 'loose':
+                                    status3, profit3 = iqoption.check_win_v3(id)
+                                    if status3 == 'loose':
                                         BALANCE = iqoption.get_balance()
-                                        print(f"Lose ${profit}")
+                                        print(f"Lose ${profit1 + profit2 + profit3}")
                                         loop = True
                                         continue
                                     else: 
                                         BALANCE = iqoption.get_balance()
-                                        print(f"Win ${profit}")
+                                        print(f"Win ${profit3}")
                                         loop = True
                                         continue
                             else: 
                                 BALANCE = iqoption.get_balance()
-                                print(f"Win ${profit}")
+                                print(f"Win ${profit2}")
                                 loop = True
                                 continue
                     else: 
                         BALANCE = iqoption.get_balance()
-                        print(f"Win ${profit}")
+                        print(f"Win ${profit1}")
                         loop = True
                         continue
             else: continue
