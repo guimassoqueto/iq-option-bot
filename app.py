@@ -19,26 +19,26 @@ if check:
         if c0['to'] == round(time()):
             if consecutive_down(last_six):
                 loop = False              
-                success1, id1 = iqoption.buy(BALANCE * 0.01, ACTIVES, 'call', 5)
+                success1, id1 = iqoption.buy(BALANCE * 0.001, ACTIVES, 'call', 5)
 
                 while not success1:
-                    success1, id1 = iqoption.buy(BALANCE * 0.01, ACTIVES, 'call', 5)
+                    success1, id1 = iqoption.buy(BALANCE * 0.001, ACTIVES, 'call', 5)
                 
                 status1, profit1 = iqoption.check_win_v3(id1)
 
                 if status1 == 'loose':
-                    success2, id2 = iqoption.buy(BALANCE * 0.01, ACTIVES, 'call', 5)
+                    success2, id2 = iqoption.buy(BALANCE * 0.002, ACTIVES, 'call', 5)
 
                     while not success2:
-                        success2, id2 = iqoption.buy(BALANCE * 0.01, ACTIVES, 'call', 5)
+                        success2, id2 = iqoption.buy(BALANCE * 0.02, ACTIVES, 'call', 5)
                     
                     status2, profit2 = iqoption.check_win_v3(id2)
                     
                     if status2 == 'loose':
-                        success3, id3 = iqoption.buy(BALANCE * 0.01, ACTIVES, 'call', 5)
+                        success3, id3 = iqoption.buy(BALANCE * 0.04, ACTIVES, 'call', 5)
 
                         while not success3:
-                            success3, id3 = iqoption.buy(BALANCE * 0.01, ACTIVES, 'call', 5)
+                            success3, id3 = iqoption.buy(BALANCE * 0.04, ACTIVES, 'call', 5)
 
                         status3, profit3 = iqoption.check_win_v3(id2)
                     
