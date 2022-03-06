@@ -1,6 +1,0 @@
-Open: 1109.465 Close: 1109.4
-Open: 1109.4 Close: 1108.04
-Open: 1108.035 Close: 1106.83
-Open: 1106.855 Close: 1106.3
-Open: 1106.315 Close: 1106.58
-Open: 1106.56 Close: 1106.585

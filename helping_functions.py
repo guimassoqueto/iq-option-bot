@@ -85,3 +85,34 @@ def generate_processes(actives_list: list, func, iq: object) -> dict:
         processes[active] = Process(target=func, args=(iq, active, timeframe, 6))
 
     return processes
+
+def enter_operation(iq: object, active: str, action: str, balance: float, multiplier: int, expiration: int) -> tuple:
+    '''
+    Start an operation
+    '''
+    gale = 1
+    if multiplier: 
+        gale = 2.5 ** multiplier
+        print(f"M{multiplier + 1}")
+
+    price = balance * 0.0001 * gale
+
+    success, id = iq.buy(price, active, action, expiration)
+
+    while not success:
+        success, id = iq.buy(price, active, action, expiration)
+
+    print(f"Wait for results ({action.upper()})...")
+
+    return iq.check_win_v3(id)
+
+def trade_result(iq: object, profit: float)-> tuple:
+    '''
+    Print to the user the result of an operation, update the balance and continue the loop
+    '''
+    if profit < 0:
+        print(f"You lose ${profit}")
+    else:
+        print(f"You win ${profit}")
+
+    return (True, iq.get_balance())
