@@ -104,7 +104,7 @@ def enter_operation(iq: object, active: str, action: str, balance: float, multip
 
     print(f"Wait for results ({action.upper()})...")
 
-    return iq.check_win_v3(id)
+    return iq.check_win_v4(id)
 
 def trade_result(iq: object, profit: float)-> tuple:
     '''
