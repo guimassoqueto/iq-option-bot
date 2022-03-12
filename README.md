@@ -2,4 +2,4 @@
 IQ Option Trading Bot
 
 Token
-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
+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

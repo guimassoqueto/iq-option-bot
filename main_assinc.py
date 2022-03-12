@@ -1,5 +1,5 @@
 from multiprocessing import Process
-from helping_functions import login_IQ_Option, get_actives_to_trade, generate_processes
+from helpers.helping_functions import login_IQ_Option, get_actives_to_trade, generate_processes
 from time import sleep, time
 
 def test(iq, active, timeframe, candles_quantity):

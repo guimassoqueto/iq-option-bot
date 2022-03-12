@@ -1,16 +1,17 @@
 #! /usr/bin/python3
 
 from time import time, sleep
-from helping_functions import (
+from helpers.helping_functions import (
     login_IQ_Option, 
     consecutive_down, 
     consecutive_up, 
     all_tradeable_actives, 
     enter_operation, 
-    trade_result
+    trade_result,
+    set_interval
 )
 
-from variables import expiration_mode
+from constants.variables import expiration_mode
 
 all_act = all_tradeable_actives()
 
@@ -25,11 +26,26 @@ while TIMEFRAME not in (30, 60, 120, 300):
 EXPIRATION = expiration_mode[str(TIMEFRAME)]
 
 iqoption = login_IQ_Option()
-check, reason = iqoption.connect()
-
+CHECK, _ = iqoption.connect()
 BALANCE = iqoption.get_balance()
 
-if check:
+def check_conn():
+    '''
+    função que checa status da conexão
+    '''
+    conn = iqoption.check_connect()
+    if not conn:
+        CHECK, _ = iqoption.connect()
+
+        while not CHECK:
+            print('Trying to reconnect...')
+            CHECK, _ = iqoption.connect()
+            
+        print('Reconnected!')
+
+set_interval(check_conn, 15)
+
+if CHECK:
     loop = True
     arr = [0,0]
     while loop:

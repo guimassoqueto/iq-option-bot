@@ -5,9 +5,9 @@ from iqoptionapi.stable_api import IQ_Option
 from os import environ
 import threading
 from datetime import datetime
-from multiprocessing import cpu_count, Process
+from multiprocessing import Process
 from iqoptionapi.constants import ACTIVES
-from time import time
+from time import sleep
 
 def login_IQ_Option():
     return IQ_Option(environ['MY_EMAIL'], environ['IQ_OPTION_PWD'])
@@ -114,5 +114,7 @@ def trade_result(iq: object, profit: float)-> tuple:
         print(f"You lose ${profit}")
     else:
         print(f"You win ${profit}")
+
+    sleep(600)
 
     return (True, iq.get_balance())
