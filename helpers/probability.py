@@ -1,7 +1,7 @@
 #! /usr/bin/python3
 
 from time import time
-from helpers.helping_functions import login_IQ_Option
+from helping_functions import login_IQ_Option
 
 arr = []
 UP = 0

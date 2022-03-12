@@ -2,34 +2,28 @@
 
 from time import time, sleep
 from helpers.helping_functions import (
-    login_IQ_Option, 
+    login_IQ_Option,
+    start_trading,
     consecutive_down, 
     consecutive_up, 
-    all_tradeable_actives, 
     enter_operation, 
     trade_result,
-    set_interval
+    set_interval,
+    write_process,
+    write_is_trading
 )
 
-from constants.variables import expiration_mode
+ACTIVE, TIMEFRAME, EXPIRATION = start_trading()
 
-all_act = all_tradeable_actives()
-
-ACTIVE = input('Active: ').upper()
-while ACTIVE not in all_act:
-    ACTIVE = input('Active: ').upper()
-
-TIMEFRAME = int(input('Timeframe (30, 60, 120 or 300): '))
-while TIMEFRAME not in (30, 60, 120, 300):
-    TIMEFRAME = int(input('Timeframe (30, 60, 120 or 300): '))
-
-EXPIRATION = expiration_mode[str(TIMEFRAME)]
+write_process()
+write_is_trading(0)
 
 iqoption = login_IQ_Option()
 CHECK, _ = iqoption.connect()
 BALANCE = iqoption.get_balance()
 
-def check_conn():
+#######################################################
+def check_conn() -> None:
     '''
     função que checa status da conexão
     '''
@@ -44,6 +38,7 @@ def check_conn():
         print('Reconnected!')
 
 set_interval(check_conn, 15)
+########################################################
 
 if CHECK:
     loop = True
@@ -82,9 +77,9 @@ if CHECK:
 
                                         if (status6 == 'loose'):
                                             sleep(600)
-                                            loop, BALANCE = trade_result(iqoption, p6 + p5 + p4 + p3 + p2 + p1 + p0)
+                                            loop, BALANCE = trade_result(iqoption, p6 + p5 + p4 + p3 + p2 + p1 + p0)                                            
                                         else:
-                                            loop, BALANCE = trade_result(iqoption, p6 + p5 + p4 + p3 + p2 + p1 + p0)
+                                            loop, BALANCE = trade_result(iqoption, p6 + p5 + p4 + p3 + p2 + p1 + p0)                                    
                                     else:
                                         loop, BALANCE = trade_result(iqoption, p5 + p4 + p3 + p2 + p1 + p0)
                                 else:

@@ -2,29 +2,52 @@
 
 from csv import writer
 from iqoptionapi.stable_api import IQ_Option
-from os import environ
+from os import environ, getpid
 import threading
 from datetime import datetime
 from multiprocessing import Process
 from iqoptionapi.constants import ACTIVES
 from time import sleep
+from constants import expiration_mode
+
 
 def login_IQ_Option():
     return IQ_Option(environ['MY_EMAIL'], environ['IQ_OPTION_PWD'])
+
+
+def start_trading() -> None:
+    '''
+    Select and return ACTIVE, TIMEFRAME and EXPIRATION
+    '''
+    all_act = all_tradeable_actives()
+
+    ACTIVE = input('Active: ').upper()
+    while ACTIVE not in all_act:
+        ACTIVE = input('Active: ').upper()
+
+    TIMEFRAME = int(input('Timeframe (30, 60, 120 or 300): '))
+    while TIMEFRAME not in (30, 60, 120, 300):
+        TIMEFRAME = int(input('Timeframe (30, 60, 120 or 300): '))
+
+    return (ACTIVE, TIMEFRAME, expiration_mode[str(TIMEFRAME)])
+
 
 def consecutive_up(last_five: list) -> bool:
     [c5, c4, c3, c2, c1] = last_five
     return c5['open'] < c5['close'] and c4['open'] < c4['close'] and c3['open'] < c3['close'] and c2['open'] < c2['close'] and c1['open'] < c1['close']
 
+
 def consecutive_down(last_five: list) -> bool:
     [c5, c4, c3, c2, c1] = last_five
     return c5['open'] > c5['close'] and c4['open'] > c4['close'] and c3['open'] > c3['close'] and c2['open'] > c2['close'] and c1['open'] > c1['close']
+
 
 def write_consecutives(active: str, up_or_down: str) -> None:
     now = datetime.now().strftime("%d/%m/%y %H:%M:%S")
     with open('consecutive_candles.csv', 'a', encoding='utf-8', newline='') as csvfile:
         spamwriter = writer(csvfile)
         spamwriter.writerow([active, up_or_down, now])
+
 
 def set_interval(func, sec):
     def func_wrapper():
@@ -34,9 +57,11 @@ def set_interval(func, sec):
     t.start()
     return t
 
+
 def all_tradeable_actives() -> list:
     '''Return a list of IQ Options' actives able to trade'''
     return [active for active in ACTIVES.keys()]
+
 
 def get_actives_to_trade() -> list:
     '''
@@ -62,6 +87,7 @@ def get_actives_to_trade() -> list:
         
     return actives
 
+
 def get_timeframe_to_trade() -> int:
     '''
         Creates the timeframe based on user' timeframe selection
@@ -72,6 +98,7 @@ def get_timeframe_to_trade() -> int:
         timeframe = input('Timeframe (30, 60, 120, 300): ')
 
     return int(timeframe)
+
 
 def generate_processes(actives_list: list, func, iq: object) -> dict:
     '''
@@ -85,6 +112,7 @@ def generate_processes(actives_list: list, func, iq: object) -> dict:
         processes[active] = Process(target=func, args=(iq, active, timeframe, 6))
 
     return processes
+
 
 def enter_operation(iq: object, active: str, action: str, balance: float, multiplier: int, expiration: int) -> tuple:
     '''
@@ -102,9 +130,11 @@ def enter_operation(iq: object, active: str, action: str, balance: float, multip
     while not success:
         success, id = iq.buy(price, active, action, expiration)
 
+    write_is_trading(1)
     print(f"Wait for results ({action.upper()})...")
 
     return iq.check_win_v4(id)
+
 
 def trade_result(iq: object, profit: float)-> tuple:
     '''
@@ -115,6 +145,25 @@ def trade_result(iq: object, profit: float)-> tuple:
     else:
         print(f"You win ${profit}")
 
-    sleep(600)
+    write_is_trading(0)
+    sleep(360)
 
     return (True, iq.get_balance())
+
+
+def write_process() -> None:
+    '''
+    Write the process number in the file PID
+    '''
+    f = open('PID', 'w', encoding='utf-8')
+    f.write(f"{getpid()}")
+    f.close()
+
+
+def write_is_trading(istrading: int) -> None:
+    '''
+    Write and return if the program is trading at the given moment (0: false, 1: true)
+    '''
+    f = open('ISTRADING', 'w', encoding='utf-8')
+    f.write(f"{istrading}")
+    f.close()
