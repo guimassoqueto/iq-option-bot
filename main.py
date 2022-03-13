@@ -3,7 +3,7 @@
 from time import time, sleep
 from helpers.helping_functions import (
     login_IQ_Option,
-    start_trading,
+    select_active_timeframe_v2,
     consecutive_down, 
     consecutive_up, 
     enter_operation, 
@@ -13,7 +13,7 @@ from helpers.helping_functions import (
     write_is_trading
 )
 
-ACTIVE, TIMEFRAME, EXPIRATION = start_trading()
+ACTIVE, TIMEFRAME, EXPIRATION = select_active_timeframe_v2()
 
 write_process()
 write_is_trading(0)
@@ -22,7 +22,7 @@ iqoption = login_IQ_Option()
 CHECK, _ = iqoption.connect()
 BALANCE = iqoption.get_balance()
 
-#######################################################
+######################################################
 def check_conn() -> None:
     '''
     função que checa status da conexão
@@ -117,7 +117,6 @@ if CHECK:
                                         status6, p6 = enter_operation(iqoption, ACTIVE, action, BALANCE, 6, EXPIRATION)
 
                                         if (status6 == 'loose'):
-                                            sleep(600)
                                             loop, BALANCE = trade_result(iqoption, p6 + p5 + p4 + p3 + p2 + p1 + p0)
                                         else:
                                             loop, BALANCE = trade_result(iqoption, p6 + p5 + p4 + p3 + p2 + p1 + p0)

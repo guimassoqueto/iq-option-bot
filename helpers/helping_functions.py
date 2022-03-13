@@ -1,5 +1,6 @@
 #! /usr/bin/python3
 
+from sys import argv
 from csv import writer
 from iqoptionapi.stable_api import IQ_Option
 from os import environ, getpid
@@ -8,14 +9,19 @@ from datetime import datetime
 from multiprocessing import Process
 from iqoptionapi.constants import ACTIVES
 from time import sleep
-from constants import expiration_mode
 
+expiration_mode = {
+    '30': .5,
+    '60': 1,
+    '120': 2,
+    '300': 5
+}
 
 def login_IQ_Option():
     return IQ_Option(environ['MY_EMAIL'], environ['IQ_OPTION_PWD'])
 
 
-def start_trading() -> None:
+def select_active_timeframe_v1() -> None:
     '''
     Select and return ACTIVE, TIMEFRAME and EXPIRATION
     '''
@@ -29,6 +35,21 @@ def start_trading() -> None:
     while TIMEFRAME not in (30, 60, 120, 300):
         TIMEFRAME = int(input('Timeframe (30, 60, 120 or 300): '))
 
+    return (ACTIVE, TIMEFRAME, expiration_mode[str(TIMEFRAME)])
+
+
+def select_active_timeframe_v2() -> tuple:
+    '''
+    Select and return ACTIVE, TIMEFRAME and EXPIRATION based on terminal args
+    '''
+    if len(argv) == 3:
+        ACTIVE = argv[1].upper()
+        TIMEFRAME = int(argv[2])
+        if (ACTIVE not in all_tradeable_actives()) or (TIMEFRAME not in (30, 60, 120, 300)):
+            raise Exception(f"{ACTIVE} isn't a valid active or {TIMEFRAME} isn't a valid timeframe.")
+    else:
+        raise Exception("There isn't enough args.")
+    
     return (ACTIVE, TIMEFRAME, expiration_mode[str(TIMEFRAME)])
 
 
