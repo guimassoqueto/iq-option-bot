@@ -164,7 +164,25 @@ def trade_result(iq: object, profit: float)-> tuple:
     if profit < 0:
         print(f"You lose ${profit}")
     else:
-        print(f"You win ${profit}")
+        print(f"You won ${profit}")
+
+    write_is_trading(0)
+    sleep(360)
+
+    return (True, iq.get_balance())
+
+def trade_result_v2(iq: object, profit: float)-> tuple:
+    '''
+    Write in a file the result of an operation, update the balance and continue the loop
+    '''
+    if profit < 0:
+        f = open('TRADING_RESULTS', 'a', encoding='utf-8')
+        f.write(f"You lose ${profit}\n")
+        f.close()
+    else:
+        f = open('TRADING_RESULTS', 'a', encoding='utf-8')
+        f.write(f"You won ${profit}\n")
+        f.close()
 
     write_is_trading(0)
     sleep(360)
