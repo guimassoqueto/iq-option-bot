@@ -1,26 +1,46 @@
 #! /usr/bin/python3
 
-from time import time
-from helping_functions import login_IQ_Option, consecutive_down, consecutive_up, write_consecutives
-from all_tradeable_actives import all_tradeable_actives
-from variables import expiration_mode
+from time import time, sleep
+from helpers.helping_functions import (
+    login_IQ_Option,
+    select_active_timeframe_v2,
+    consecutive_down, 
+    consecutive_up, 
+    enter_operation, 
+    trade_result,
+    set_interval,
+    write_process,
+    write_is_trading
+)
 
-ACTIVE = input('Active: ').upper()
-while ACTIVE not in all_tradeable_actives:
-    ACTIVE = input('Active: ').upper()
+ACTIVE, TIMEFRAME, EXPIRATION = select_active_timeframe_v2()
 
-TIMEFRAME = int(input('Timeframe (30, 60, 120 or 300): '))
-while TIMEFRAME not in (30, 60, 120, 300):
-    TIMEFRAME = int(input('Timeframe (30, 60, 120 or 300): '))
-
-EXPIRATION_MODE = expiration_mode[str(TIMEFRAME)]
+write_process()
+write_is_trading(0)
 
 iqoption = login_IQ_Option()
-check, reason = iqoption.connect()
-
+CHECK, _ = iqoption.connect()
 BALANCE = iqoption.get_balance()
 
-if check:
+######################################################
+def check_conn() -> None:
+    '''
+    função que checa status da conexão
+    '''
+    conn = iqoption.check_connect()
+    if not conn:
+        CHECK, _ = iqoption.connect()
+
+        while not CHECK:
+            print('Trying to reconnect...')
+            CHECK, _ = iqoption.connect()
+            
+        print('Reconnected!')
+
+set_interval(check_conn, 15)
+########################################################
+
+if CHECK:
     loop = True
     arr = [0,0]
     while loop:
@@ -32,9 +52,84 @@ if check:
             arr.append(current['to'])
             arr = arr[1:]
 
-            if consecutive_up(last_candles): 
-                write_consecutives(ACTIVE, 'UP')
+            if consecutive_up(last_candles):
+                loop = False
+                action = 'put'
+                status0, p0 = enter_operation(iqoption, ACTIVE, action, BALANCE, 0, EXPIRATION)
+
+                if(status0 == 'loose'):
+                    status1, p1 = enter_operation(iqoption, ACTIVE, action, BALANCE, 1, EXPIRATION)
+
+                    if(status1 == 'loose'):
+                        status2, p2 = enter_operation(iqoption, ACTIVE, action, BALANCE, 2, EXPIRATION)
+
+                        if(status2 == 'loose'):
+                            status3, p3 = enter_operation(iqoption, ACTIVE, action, BALANCE, 3, EXPIRATION)
+
+                            if(status3 == 'loose'):
+                                status4, p4 = enter_operation(iqoption, ACTIVE, action, BALANCE, 4, EXPIRATION)
+
+                                if(status4 == 'loose'):
+                                    status5, p5 = enter_operation(iqoption, ACTIVE, action, BALANCE, 5, EXPIRATION)
+
+                                    if(status5 == 'loose'):
+                                        status6, p6 = enter_operation(iqoption, ACTIVE, action, BALANCE, 6, EXPIRATION)
+
+                                        if (status6 == 'loose'):
+                                            sleep(600)
+                                            loop, BALANCE = trade_result(iqoption, p6 + p5 + p4 + p3 + p2 + p1 + p0)                                            
+                                        else:
+                                            loop, BALANCE = trade_result(iqoption, p6 + p5 + p4 + p3 + p2 + p1 + p0)                                    
+                                    else:
+                                        loop, BALANCE = trade_result(iqoption, p5 + p4 + p3 + p2 + p1 + p0)
+                                else:
+                                    loop, BALANCE = trade_result(iqoption, p4 + p3 + p2 + p1 + p0)
+                            else:
+                                loop, BALANCE = trade_result(iqoption, p3 + p2 + p1 + p0)
+                        else:
+                            loop, BALANCE = trade_result(iqoption, p2 + p1 + p0)
+                    else:
+                        loop, BALANCE = trade_result(iqoption, p1 + p0)
+                else:
+                    loop, BALANCE = trade_result(iqoption, p0)
 
             if consecutive_down(last_candles):
-                write_consecutives(ACTIVE, 'DOWN')
-        
+                loop = False
+                action = 'call'
+                status0, p0 = enter_operation(iqoption, ACTIVE, action, BALANCE, 0, EXPIRATION)
+
+                if(status0 == 'loose'):
+                    status1, p1 = enter_operation(iqoption, ACTIVE, action, BALANCE, 1, EXPIRATION)
+
+                    if(status1 == 'loose'):
+                        status2, p2 = enter_operation(iqoption, ACTIVE, action, BALANCE, 2, EXPIRATION)
+
+                        if(status2 == 'loose'):
+                            status3, p3 = enter_operation(iqoption, ACTIVE, action, BALANCE, 3, EXPIRATION)
+
+                            if(status3 == 'loose'):
+                                status4, p4 = enter_operation(iqoption, ACTIVE, action, BALANCE, 4, EXPIRATION)
+
+                                if(status4 == 'loose'):
+                                    status5, p5 = enter_operation(iqoption, ACTIVE, action, BALANCE, 5, EXPIRATION)
+
+                                    if(status5 == 'loose'):
+                                        status6, p6 = enter_operation(iqoption, ACTIVE, action, BALANCE, 6, EXPIRATION)
+
+                                        if (status6 == 'loose'):
+                                            loop, BALANCE = trade_result(iqoption, p6 + p5 + p4 + p3 + p2 + p1 + p0)
+                                        else:
+                                            loop, BALANCE = trade_result(iqoption, p6 + p5 + p4 + p3 + p2 + p1 + p0)
+                                    else:
+                                        loop, BALANCE = trade_result(iqoption, p5 + p4 + p3 + p2 + p1 + p0)
+                                else:
+                                    loop, BALANCE = trade_result(iqoption, p4 + p3 + p2 + p1 + p0)
+                            else:
+                                loop, BALANCE = trade_result(iqoption, p3 + p2 + p1 + p0)
+                        else:
+                            loop, BALANCE = trade_result(iqoption, p2 + p1 + p0)
+                    else:
+                        loop, BALANCE = trade_result(iqoption, p1 + p0)
+                else:
+                    loop, BALANCE = trade_result(iqoption, p0)
+        else: continue
