@@ -1,6 +1,6 @@
 #! /usr/bin/bash
 
-ISTRADING=`head -n 1 ISTRADING`; 
+ISTRADING=`head -n 1 /home/guilherme/Desktop/iq-option-bot/ISTRADING`; 
 if (($ISTRADING == 1)); then 
     sleep 8m;
     /home/guilherme/Desktop/iq-option-bot/kill_proccess.sh;

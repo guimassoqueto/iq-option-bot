@@ -3,7 +3,8 @@
 from sys import argv
 from csv import writer
 from iqoptionapi.stable_api import IQ_Option
-from os import environ, getpid
+from os import environ, getpid, getcwd
+from os.path import abspath, join
 import threading
 from datetime import datetime
 from multiprocessing import Process
@@ -157,6 +158,30 @@ def enter_operation(iq: object, active: str, action: str, balance: float, multip
     return iq.check_win_v4(id)
 
 
+def enter_operation_v2(iq: object, active: str, action: str, balance: float, multiplier: int, expiration: int) -> tuple:
+    '''
+    Start an operation and write the results in the file
+    '''
+    gale = 1
+    if multiplier: 
+        gale = 2.5 ** multiplier
+        print(f"M{multiplier + 1}")
+
+    price = balance * 0.0001 * gale
+
+    success, id = iq.buy(price, active, action, expiration)
+
+    while not success:
+        success, id = iq.buy(price, active, action, expiration)
+
+    write_is_trading(1)
+    f = open('/home/guilherme/Desktop/iq-option-bot/TRADING_RESULTS', 'a', encoding='utf-8')
+    f.write(f"Wait for results ({action.upper()})...")
+    f.close()
+
+    return iq.check_win_v4(id)
+
+
 def trade_result(iq: object, profit: float)-> tuple:
     '''
     Print to the user the result of an operation, update the balance and continue the loop
@@ -176,11 +201,12 @@ def trade_result_v2(iq: object, profit: float)-> tuple:
     Write in a file the result of an operation, update the balance and continue the loop
     '''
     if profit < 0:
-        f = open('TRADING_RESULTS', 'a', encoding='utf-8')
+        # trading_results_location = join(abspath(getcwd()), 'TRADING_RESULTS')
+        f = open('/home/guilherme/Desktop/iq-option-bot/TRADING_RESULTS', 'a', encoding='utf-8')
         f.write(f"You lose ${profit}\n")
         f.close()
     else:
-        f = open('TRADING_RESULTS', 'a', encoding='utf-8')
+        f = open('/home/guilherme/Desktop/iq-option-bot/TRADING_RESULTS', 'a', encoding='utf-8')
         f.write(f"You won ${profit}\n")
         f.close()
 
@@ -194,7 +220,8 @@ def write_process() -> None:
     '''
     Write the process number in the file PID
     '''
-    f = open('PID', 'w', encoding='utf-8')
+    # PID_location = join(abspath(getcwd()), 'PID')
+    f = open('/home/guilherme/Desktop/iq-option-bot/PID', 'w', encoding='utf-8')
     f.write(f"{getpid()}")
     f.close()
 
@@ -203,6 +230,7 @@ def write_is_trading(istrading: int) -> None:
     '''
     Write and return if the program is trading at the given moment (0: false, 1: true)
     '''
-    f = open('ISTRADING', 'w', encoding='utf-8')
+    # ISTRADING_location = join(abspath(getcwd()), 'ISTRADING')
+    f = open('/home/guilherme/Desktop/iq-option-bot/ISTRADING', 'w', encoding='utf-8')
     f.write(f"{istrading}")
     f.close()
