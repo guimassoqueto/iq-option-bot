@@ -214,6 +214,24 @@ def trade_result_v2(iq: object, profit: float)-> tuple:
     sleep(360)
 
     return (True, iq.get_balance())
+    
+    
+def trade_result_v3(iq: object, profit: float)-> tuple:
+    '''
+    Print to the user the result of an operation, update the balance, print the balance and continue the loop
+    '''
+    if profit < 0:
+        print(f"You lose ${profit}")
+    else:
+        print(f"You won ${profit}")
+
+    print(f"Current Balance: ${iq.get_balance()}\n")
+    
+    sleep(360)
+    
+    BALANCE = iq.get_balance()
+
+    return (True, BALANCE)
 
 
 def write_process() -> None:

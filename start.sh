@@ -1,3 +1,4 @@
 #! /usr/bin/bash
 
-/home/guilherme/Desktop/iq-option-bot/main.py eurusd 60;
+
+/home/guilherme/Desktop/iq-option-bot/main.py eurusd-otc 60;
