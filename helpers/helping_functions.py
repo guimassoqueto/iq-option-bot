@@ -225,11 +225,11 @@ def trade_result_v3(iq: object, profit: float)-> tuple:
     else:
         print(f"You won ${profit}")
 
-    write_is_trading(0)
+    print(f"Current Balance: ${iq.get_balance()}\n")
+    
     sleep(360)
     
     BALANCE = iq.get_balance()
-    print(f"Current Balance: ${BALANCE}\n")
 
     return (True, BALANCE)
 
