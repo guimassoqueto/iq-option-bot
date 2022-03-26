@@ -54,6 +54,22 @@ def select_active_timeframe_v2() -> tuple:
     return (ACTIVE, TIMEFRAME, expiration_mode[str(TIMEFRAME)])
 
 
+def select_active_timeframe_candlecount() -> tuple:
+    '''
+    Select and return ACTIVE, TIMEFRAME and CANDLES RETRIEVED based on terminal args
+    '''
+    if len(argv) == 4:
+        ACTIVE = argv[1].upper()
+        TIMEFRAME = int(argv[2])
+        RETRIEVED_CANDLES = int(argv[3])
+        if (ACTIVE not in all_tradeable_actives()) or (TIMEFRAME not in (30, 60, 120, 300) or (RETRIEVED_CANDLES < 1 or RETRIEVED_CANDLES > 100)):
+            raise Exception(f"{ACTIVE} isn't a valid active or {TIMEFRAME} isn't a valid timeframe.")
+    else:
+        raise Exception("There isn't enough args.")
+    
+    return (ACTIVE, TIMEFRAME, RETRIEVED_CANDLES)
+
+
 def consecutive_up(last_five: list) -> bool:
     [c5, c4, c3, c2, c1] = last_five
     return c5['open'] < c5['close'] and c4['open'] < c4['close'] and c3['open'] < c3['close'] and c2['open'] < c2['close'] and c1['open'] < c1['close']
