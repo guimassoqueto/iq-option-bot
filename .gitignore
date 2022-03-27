@@ -128,7 +128,6 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-# Temporary files
-PID
-ISTRADING
-TRADING_RESULTS
+#Trade files
+trades/pid/*
+trades/istrading/*
