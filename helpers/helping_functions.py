@@ -183,7 +183,7 @@ def trade_result(iq: object, profit: float, active: str)-> tuple:
     else:
         print(f"[{active}] You won ${profit}")
     
-    print('Current balance: {iq.get_balance()}')
+    print(f'Current balance: {iq.get_balance()}')
 
     write_is_trading(active, 0)
     sleep(360)
