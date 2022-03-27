@@ -54,6 +54,22 @@ def select_active_timeframe_v2() -> tuple:
     return (ACTIVE, TIMEFRAME, expiration_mode[str(TIMEFRAME)])
 
 
+def select_active_timeframe_candlecount() -> tuple:
+    '''
+    Select and return ACTIVE, TIMEFRAME and CANDLES RETRIEVED based on terminal args
+    '''
+    if len(argv) == 4:
+        ACTIVE = argv[1].upper()
+        TIMEFRAME = int(argv[2])
+        RETRIEVED_CANDLES = int(argv[3])
+        if (ACTIVE not in all_tradeable_actives()) or (TIMEFRAME not in (30, 60, 120, 300) or (RETRIEVED_CANDLES < 1 or RETRIEVED_CANDLES > 100)):
+            raise Exception(f"{ACTIVE} isn't a valid active or {TIMEFRAME} isn't a valid timeframe.")
+    else:
+        raise Exception("There isn't enough args.")
+    
+    return (ACTIVE, TIMEFRAME, RETRIEVED_CANDLES)
+
+
 def consecutive_up(last_five: list) -> bool:
     [c5, c4, c3, c2, c1] = last_five
     return c5['open'] < c5['close'] and c4['open'] < c4['close'] and c3['open'] < c3['close'] and c2['open'] < c2['close'] and c1['open'] < c1['close']
@@ -152,37 +168,13 @@ def enter_operation(iq: object, active: str, action: str, balance: float, multip
     while not success:
         success, id = iq.buy(price, active, action, expiration)
 
-    write_is_trading(1)
-    print(f"Wait for results ({action.upper()})...")
+    write_is_trading(active, 1)
+    print(f"{active} - Wait for results ({action.upper()})...")
 
     return iq.check_win_v4(id)
 
 
-def enter_operation_v2(iq: object, active: str, action: str, balance: float, multiplier: int, expiration: int) -> tuple:
-    '''
-    Start an operation and write the results in the file
-    '''
-    gale = 1
-    if multiplier: 
-        gale = 2.5 ** multiplier
-        print(f"M{multiplier + 1}")
-
-    price = balance * 0.0001 * gale
-
-    success, id = iq.buy(price, active, action, expiration)
-
-    while not success:
-        success, id = iq.buy(price, active, action, expiration)
-
-    write_is_trading(1)
-    f = open('/home/guilherme/Desktop/iq-option-bot/TRADING_RESULTS', 'a', encoding='utf-8')
-    f.write(f"Wait for results ({action.upper()})...")
-    f.close()
-
-    return iq.check_win_v4(id)
-
-
-def trade_result(iq: object, profit: float)-> tuple:
+def trade_result(iq: object, profit: float, active: str)-> tuple:
     '''
     Print to the user the result of an operation, update the balance and continue the loop
     '''
@@ -191,64 +183,25 @@ def trade_result(iq: object, profit: float)-> tuple:
     else:
         print(f"You won ${profit}")
 
-    write_is_trading(0)
+    write_is_trading(active, 0)
     sleep(360)
 
     return (True, iq.get_balance())
 
-def trade_result_v2(iq: object, profit: float)-> tuple:
-    '''
-    Write in a file the result of an operation, update the balance and continue the loop
-    '''
-    if profit < 0:
-        # trading_results_location = join(abspath(getcwd()), 'TRADING_RESULTS')
-        f = open('/home/guilherme/Desktop/iq-option-bot/TRADING_RESULTS', 'a', encoding='utf-8')
-        f.write(f"You lose ${profit}\n")
-        f.close()
-    else:
-        f = open('/home/guilherme/Desktop/iq-option-bot/TRADING_RESULTS', 'a', encoding='utf-8')
-        f.write(f"You won ${profit}\n")
-        f.close()
 
-    write_is_trading(0)
-    sleep(360)
-
-    return (True, iq.get_balance())
-    
-    
-def trade_result_v3(iq: object, profit: float)-> tuple:
-    '''
-    Print to the user the result of an operation, update the balance, print the balance and continue the loop
-    '''
-    if profit < 0:
-        print(f"You lose ${profit}")
-    else:
-        print(f"You won ${profit}")
-
-    print(f"Current Balance: ${iq.get_balance()}\n")
-    
-    sleep(360)
-    
-    BALANCE = iq.get_balance()
-
-    return (True, BALANCE)
-
-
-def write_process() -> None:
+def write_process(active: str) -> None:
     '''
     Write the process number in the file PID
     '''
-    # PID_location = join(abspath(getcwd()), 'PID')
-    f = open('/home/guilherme/Desktop/iq-option-bot/PID', 'w', encoding='utf-8')
+    f = open(f'/home/guilherme/Desktop/iq-option-bot/trades/pid/{active}', 'w', encoding='utf-8')
     f.write(f"{getpid()}")
     f.close()
 
 
-def write_is_trading(istrading: int) -> None:
+def write_is_trading(active:str, istrading: int) -> None:
     '''
     Write and return if the program is trading at the given moment (0: false, 1: true)
     '''
-    # ISTRADING_location = join(abspath(getcwd()), 'ISTRADING')
-    f = open('/home/guilherme/Desktop/iq-option-bot/ISTRADING', 'w', encoding='utf-8')
+    f = open(f'/home/guilherme/Desktop/iq-option-bot/trades/istrading/{active}', 'w', encoding='utf-8')
     f.write(f"{istrading}")
     f.close()
