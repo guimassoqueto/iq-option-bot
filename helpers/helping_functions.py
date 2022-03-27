@@ -179,9 +179,11 @@ def trade_result(iq: object, profit: float, active: str)-> tuple:
     Print to the user the result of an operation, update the balance and continue the loop
     '''
     if profit < 0:
-        print(f"You lose ${profit}")
+        print(f"[{active}] You lose ${profit}")
     else:
-        print(f"You won ${profit}")
+        print(f"[{active}] You won ${profit}")
+    
+    print('Current balance: {iq.get_balance()}')
 
     write_is_trading(active, 0)
     sleep(360)
