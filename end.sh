@@ -15,7 +15,7 @@ do
 		rm $PIDS/$f;
 		rm $ISTRADINGS/$f;
 	else
-		sleep 5;
+		sleep 60;
 		/home/guilherme/Desktop/iq-option-bot/kill.sh;
 	fi
 done

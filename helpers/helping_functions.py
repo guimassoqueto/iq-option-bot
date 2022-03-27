@@ -174,30 +174,6 @@ def enter_operation(iq: object, active: str, action: str, balance: float, multip
     return iq.check_win_v4(id)
 
 
-def enter_operation_v2(iq: object, active: str, action: str, balance: float, multiplier: int, expiration: int) -> tuple:
-    '''
-    Start an operation and write the results in the file
-    '''
-    gale = 1
-    if multiplier: 
-        gale = 2.5 ** multiplier
-        print(f"M{multiplier + 1}")
-
-    price = balance * 0.0001 * gale
-
-    success, id = iq.buy(price, active, action, expiration)
-
-    while not success:
-        success, id = iq.buy(price, active, action, expiration)
-
-    write_is_trading(1)
-    f = open('/home/guilherme/Desktop/iq-option-bot/TRADING_RESULTS', 'a', encoding='utf-8')
-    f.write(f"Wait for results ({action.upper()})...")
-    f.close()
-
-    return iq.check_win_v4(id)
-
-
 def trade_result(iq: object, profit: float, active: str)-> tuple:
     '''
     Print to the user the result of an operation, update the balance and continue the loop
@@ -207,7 +183,7 @@ def trade_result(iq: object, profit: float, active: str)-> tuple:
     else:
         print(f"You won ${profit}")
 
-    write_is_trading(0)
+    write_is_trading(active, 0)
     sleep(360)
 
     return (True, iq.get_balance())
