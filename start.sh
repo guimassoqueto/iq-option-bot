@@ -1,13 +1,20 @@
-#! /usr/bin/bash
+#!/bin/bash
 
+ACTIVES=('eurusd-otc' 'eurjpy-otc' 'eurgbp-otc')
 
-#OTC=('AUDCAD-OTC' 'EURGBP-OTC' 'EURJPY-OTC' 'EURUSD-OTC' 'GBPJPY-OTC' 'GBPUSD-OTC' 'NZDUSD-OTC' 'USDCHF-OTC' 'USDHKD-OTC' 'USDINR-OTC' 'USDJPY-OTC' 'USDSGD-OTC' 'USDZAR-OTC')
+# Our custom function
+cust_func(){
+  /home/guilherme/Desktop/iq-option-bot/main.py $1 60 
+}
 
-REAL=('AUDCAD' 'EURGBP' 'EURJPY' 'EURUSD' 'GBPJPY' 'GBPUSD' 'NZDUSD' 'USDCHF' 'USDJPY')
-
-for ACTIVE in ${REAL[@]};
+# For loop 5 times
+for i in ${ACTIVES[@]};
 do
-	/home/guilherme/Desktop/iq-option-bot/helpers/probability_v2.py $ACTIVE 60 100 1>> /home/guilherme/Desktop/prob/$ACTIVE.txt;
-done;
-
-
+	cust_func $i & # Put a function in the background
+done
+ 
+## Put all cust_func in the background and bash 
+## would wait until those are completed 
+## before displaying all done message
+wait 
+echo "All done"

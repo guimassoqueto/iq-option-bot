@@ -168,8 +168,8 @@ def enter_operation(iq: object, active: str, action: str, balance: float, multip
     while not success:
         success, id = iq.buy(price, active, action, expiration)
 
-    write_is_trading(1)
-    print(f"Wait for results ({action.upper()})...")
+    write_is_trading(active, 1)
+    print(f"{active} - Wait for results ({action.upper()})...")
 
     return iq.check_win_v4(id)
 
@@ -198,7 +198,7 @@ def enter_operation_v2(iq: object, active: str, action: str, balance: float, mul
     return iq.check_win_v4(id)
 
 
-def trade_result(iq: object, profit: float)-> tuple:
+def trade_result(iq: object, profit: float, active: str)-> tuple:
     '''
     Print to the user the result of an operation, update the balance and continue the loop
     '''
@@ -212,59 +212,20 @@ def trade_result(iq: object, profit: float)-> tuple:
 
     return (True, iq.get_balance())
 
-def trade_result_v2(iq: object, profit: float)-> tuple:
-    '''
-    Write in a file the result of an operation, update the balance and continue the loop
-    '''
-    if profit < 0:
-        # trading_results_location = join(abspath(getcwd()), 'TRADING_RESULTS')
-        f = open('/home/guilherme/Desktop/iq-option-bot/TRADING_RESULTS', 'a', encoding='utf-8')
-        f.write(f"You lose ${profit}\n")
-        f.close()
-    else:
-        f = open('/home/guilherme/Desktop/iq-option-bot/TRADING_RESULTS', 'a', encoding='utf-8')
-        f.write(f"You won ${profit}\n")
-        f.close()
 
-    write_is_trading(0)
-    sleep(360)
-
-    return (True, iq.get_balance())
-    
-    
-def trade_result_v3(iq: object, profit: float)-> tuple:
-    '''
-    Print to the user the result of an operation, update the balance, print the balance and continue the loop
-    '''
-    if profit < 0:
-        print(f"You lose ${profit}")
-    else:
-        print(f"You won ${profit}")
-
-    print(f"Current Balance: ${iq.get_balance()}\n")
-    
-    sleep(360)
-    
-    BALANCE = iq.get_balance()
-
-    return (True, BALANCE)
-
-
-def write_process() -> None:
+def write_process(active: str) -> None:
     '''
     Write the process number in the file PID
     '''
-    # PID_location = join(abspath(getcwd()), 'PID')
-    f = open('/home/guilherme/Desktop/iq-option-bot/PID', 'w', encoding='utf-8')
+    f = open(f'/home/guilherme/Desktop/trades/pid/{active}', 'w', encoding='utf-8')
     f.write(f"{getpid()}")
     f.close()
 
 
-def write_is_trading(istrading: int) -> None:
+def write_is_trading(active:str, istrading: int) -> None:
     '''
     Write and return if the program is trading at the given moment (0: false, 1: true)
     '''
-    # ISTRADING_location = join(abspath(getcwd()), 'ISTRADING')
-    f = open('/home/guilherme/Desktop/iq-option-bot/ISTRADING', 'w', encoding='utf-8')
+    f = open(f'/home/guilherme/Desktop/trades/istrading/{active}', 'w', encoding='utf-8')
     f.write(f"{istrading}")
     f.close()

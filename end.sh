@@ -1,11 +1,21 @@
 #! /usr/bin/bash
 
-ISTRADING=`head -n 1 /home/guilherme/Desktop/iq-option-bot/ISTRADING`; 
-if (($ISTRADING == 1)); then 
-    sleep 8m;
-    /home/guilherme/Desktop/iq-option-bot/kill_proccess.sh;
-else 
-    PID=`head -n 1 PID`;
-    kill -9 $PID;
-    rm ISTRADING PID;
-fi;
+PIDS='/home/guilherme/Desktop/trades/pid';
+ISTRADINGS='/home/guilherme/Desktop/trades/istrading';
+
+for f in `ls $ISTRADINGS`; 
+do
+	ISTRADING=`head -1 $ISTRADINGS/$f`;
+
+	if (($ISTRADING == 0))
+	then
+		pid=`head -1 $PIDS/$f`;
+		kill -9 $pid;
+
+		rm $PIDS/$f;
+		rm $ISTRADINGS/$f;
+	else
+		sleep 5;
+		/home/guilherme/Desktop/iq-option-bot/kill.sh;
+	fi
+done
