@@ -1,7 +1,7 @@
 #! /usr/bin/bash
 
-PIDS='/home/guilherme/Desktop/trades/pid';
-ISTRADINGS='/home/guilherme/Desktop/trades/istrading';
+PIDS='/home/guilherme/Desktop/iq-option-bot/trades/pid';
+ISTRADINGS='/home/guilherme/Desktop/iq-option-bot/trades/istrading';
 
 for f in `ls $ISTRADINGS`; 
 do

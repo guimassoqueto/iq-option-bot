@@ -193,7 +193,7 @@ def write_process(active: str) -> None:
     '''
     Write the process number in the file PID
     '''
-    f = open(f'/home/guilherme/Desktop/trades/pid/{active}', 'w', encoding='utf-8')
+    f = open(f'/home/guilherme/Desktop/iq-option-bot/trades/pid/{active}', 'w', encoding='utf-8')
     f.write(f"{getpid()}")
     f.close()
 
@@ -202,6 +202,6 @@ def write_is_trading(active:str, istrading: int) -> None:
     '''
     Write and return if the program is trading at the given moment (0: false, 1: true)
     '''
-    f = open(f'/home/guilherme/Desktop/trades/istrading/{active}', 'w', encoding='utf-8')
+    f = open(f'/home/guilherme/Desktop/iq-option-bot/trades/istrading/{active}', 'w', encoding='utf-8')
     f.write(f"{istrading}")
     f.close()
