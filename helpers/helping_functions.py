@@ -75,6 +75,16 @@ def consecutive_up(last_five: list) -> bool:
     return c5['open'] < c5['close'] and c4['open'] < c4['close'] and c3['open'] < c3['close'] and c2['open'] < c2['close'] and c1['open'] < c1['close']
 
 
+def consecutive_up_crypto(last_three: list) -> bool:
+    [c3, c2, c1] = last_three
+    return c3['open'] < c3['close'] and c2['open'] < c2['close'] and c1['open'] < c1['close']
+
+
+def consecutive_down_crypto(last_three: list) -> bool:
+    [c3, c2, c1] = last_three
+    return c3['open'] < c3['close'] and c2['open'] < c2['close'] and c1['open'] < c1['close']
+
+
 def consecutive_down(last_five: list) -> bool:
     [c5, c4, c3, c2, c1] = last_five
     return c5['open'] > c5['close'] and c4['open'] > c4['close'] and c3['open'] > c3['close'] and c2['open'] > c2['close'] and c1['open'] > c1['close']
@@ -187,6 +197,23 @@ def trade_result(iq: object, profit: float, active: str)-> tuple:
 
     write_is_trading(active, 0)
     sleep(360)
+
+    return (True, iq.get_balance())
+
+
+def trade_result_crypto(iq: object, profit: float, active: str)-> tuple:
+    '''
+    Print to the user the result of an operation, update the balance and continue the loop
+    '''
+    if profit < 0:
+        print(f"[{active}] You lose ${profit}")
+    else:
+        print(f"[{active}] You won ${profit}")
+    
+    print(f'Current balance: {iq.get_balance()}')
+    sleep(120)
+
+    write_is_trading(active, 0)
 
     return (True, iq.get_balance())
 

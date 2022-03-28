@@ -1,6 +1,6 @@
 #!/bin/bash
 
-ACTIVES=('eurusd-otc' 'eurjpy-otc' 'eurgbp-otc')
+ACTIVES=('eurusd-otc' 'eurjpy-otc' 'usdjpy-otc')
 
 # Our custom function
 cust_func(){
