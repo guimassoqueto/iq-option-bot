@@ -1,14 +1,13 @@
 #! /usr/bin/python3
 
-from threading import currentThread
 from time import time, sleep
 from helpers.helping_functions import (
     login_IQ_Option,
     select_active_timeframe_v2,
-    consecutive_down_crypto, 
-    consecutive_up_crypto, 
+    consecutive_down_two, 
+    consecutive_up_two, 
     enter_operation, 
-    trade_result_crypto,
+    trade_result_two,
     set_interval,
     write_process,
     write_is_trading
@@ -44,17 +43,17 @@ set_interval(check_conn, 15)
 
 if CHECK:
     loop = True
-    arr = [0, 0]
+    arr = [0,0]
     while loop:
-        candles = iqoption.get_candles(ACTIVE, TIMEFRAME, 4, time())
+        candles = iqoption.get_candles(ACTIVE, TIMEFRAME, 3, time())
         current = candles[-1]
         last_candles = candles[:-1]
 
         if current['to'] not in arr:
             arr.append(current['to'])
             arr = arr[1:]
-
-            if consecutive_up_crypto(last_candles):
+            
+            if consecutive_up_two(last_candles):
                 loop = False
                 action = 'put'
                 status0, p0 = enter_operation(iqoption, ACTIVE, action, BALANCE, 0, EXPIRATION)
@@ -79,23 +78,23 @@ if CHECK:
 
                                         if (status6 == 'loose'):
                                             sleep(600)
-                                            loop, BALANCE = trade_result_crypto(iqoption, p6 + p5 + p4 + p3 + p2 + p1 + p0, ACTIVE)                                            
+                                            loop, BALANCE = trade_result_two(iqoption, p6 + p5 + p4 + p3 + p2 + p1 + p0, ACTIVE)                                            
                                         else:
-                                            loop, BALANCE = trade_result_crypto(iqoption, p6 + p5 + p4 + p3 + p2 + p1 + p0, ACTIVE)                                    
+                                            loop, BALANCE = trade_result_two(iqoption, p6 + p5 + p4 + p3 + p2 + p1 + p0, ACTIVE)                                    
                                     else:
-                                        loop, BALANCE = trade_result_crypto(iqoption, p5 + p4 + p3 + p2 + p1 + p0, ACTIVE)
+                                        loop, BALANCE = trade_result_two(iqoption, p5 + p4 + p3 + p2 + p1 + p0, ACTIVE)
                                 else:
-                                    loop, BALANCE = trade_result_crypto(iqoption, p4 + p3 + p2 + p1 + p0, ACTIVE)
+                                    loop, BALANCE = trade_result_two(iqoption, p4 + p3 + p2 + p1 + p0, ACTIVE)
                             else:
-                                loop, BALANCE = trade_result_crypto(iqoption, p3 + p2 + p1 + p0, ACTIVE)
+                                loop, BALANCE = trade_result_two(iqoption, p3 + p2 + p1 + p0, ACTIVE)
                         else:
-                            loop, BALANCE = trade_result_crypto(iqoption, p2 + p1 + p0, ACTIVE)
+                            loop, BALANCE = trade_result_two(iqoption, p2 + p1 + p0, ACTIVE)
                     else:
-                        loop, BALANCE = trade_result_crypto(iqoption, p1 + p0, ACTIVE)
+                        loop, BALANCE = trade_result_two(iqoption, p1 + p0, ACTIVE)
                 else:
-                    loop, BALANCE = trade_result_crypto(iqoption, p0, ACTIVE)
+                    loop, BALANCE = trade_result_two(iqoption, p0, ACTIVE)
 
-            if consecutive_down_crypto(last_candles):
+            if consecutive_down_two(last_candles):
                 loop = False
                 action = 'call'
                 status0, p0 = enter_operation(iqoption, ACTIVE, action, BALANCE, 0, EXPIRATION)
@@ -119,20 +118,20 @@ if CHECK:
                                         status6, p6 = enter_operation(iqoption, ACTIVE, action, BALANCE, 6, EXPIRATION)
 
                                         if (status6 == 'loose'):
-                                            loop, BALANCE = trade_result_crypto(iqoption, p6 + p5 + p4 + p3 + p2 + p1 + p0, ACTIVE)
+                                            loop, BALANCE = trade_result_two(iqoption, p6 + p5 + p4 + p3 + p2 + p1 + p0, ACTIVE)
                                         else:
-                                            loop, BALANCE = trade_result_crypto(iqoption, p6 + p5 + p4 + p3 + p2 + p1 + p0, ACTIVE)
+                                            loop, BALANCE = trade_result_two(iqoption, p6 + p5 + p4 + p3 + p2 + p1 + p0, ACTIVE)
                                     else:
-                                        loop, BALANCE = trade_result_crypto(iqoption, p5 + p4 + p3 + p2 + p1 + p0, ACTIVE)
+                                        loop, BALANCE = trade_result_two(iqoption, p5 + p4 + p3 + p2 + p1 + p0, ACTIVE)
                                 else:
-                                    loop, BALANCE = trade_result_crypto(iqoption, p4 + p3 + p2 + p1 + p0, ACTIVE)
+                                    loop, BALANCE = trade_result_two(iqoption, p4 + p3 + p2 + p1 + p0, ACTIVE)
                             else:
-                                loop, BALANCE = trade_result_crypto(iqoption, p3 + p2 + p1 + p0, ACTIVE)
+                                loop, BALANCE = trade_result_two(iqoption, p3 + p2 + p1 + p0, ACTIVE)
                         else:
-                            loop, BALANCE = trade_result_crypto(iqoption, p2 + p1 + p0, ACTIVE)
+                            loop, BALANCE = trade_result_two(iqoption, p2 + p1 + p0, ACTIVE)
                     else:
-                        loop, BALANCE = trade_result_crypto(iqoption, p1 + p0, ACTIVE)
+                        loop, BALANCE = trade_result_two(iqoption, p1 + p0, ACTIVE)
                 else:
-                    loop, BALANCE = trade_result_crypto(iqoption, p0, ACTIVE)
+                    loop, BALANCE = trade_result_two(iqoption, p0, ACTIVE)
         else: continue
         

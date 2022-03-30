@@ -16,6 +16,6 @@ do
 		rm $ISTRADINGS/$f;
 	else
 		sleep 60;
-		/home/guilherme/Desktop/iq-option-bot/kill.sh;
+		/home/guilherme/Desktop/iq-option-bot/end.sh;
 	fi
 done

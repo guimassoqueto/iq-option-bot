@@ -75,14 +75,14 @@ def consecutive_up(last_five: list) -> bool:
     return c5['open'] < c5['close'] and c4['open'] < c4['close'] and c3['open'] < c3['close'] and c2['open'] < c2['close'] and c1['open'] < c1['close']
 
 
-def consecutive_up_crypto(last_three: list) -> bool:
-    [c3, c2, c1] = last_three
-    return c3['open'] < c3['close'] and c2['open'] < c2['close'] and c1['open'] < c1['close']
+def consecutive_up_two(last_two: list) -> bool:
+    [c2, c1] = last_two
+    return c2['open'] < c2['close'] and c1['open'] < c1['close']
 
 
-def consecutive_down_crypto(last_three: list) -> bool:
-    [c3, c2, c1] = last_three
-    return c3['open'] < c3['close'] and c2['open'] < c2['close'] and c1['open'] < c1['close']
+def consecutive_down_two(last_two: list) -> bool:
+    [c2, c1] = last_two
+    return c2['open'] > c2['close'] and c1['open'] > c1['close']
 
 
 def consecutive_down(last_five: list) -> bool:
@@ -179,7 +179,7 @@ def enter_operation(iq: object, active: str, action: str, balance: float, multip
         success, id = iq.buy(price, active, action, expiration)
 
     write_is_trading(active, 1)
-    print(f"{active} - Wait for results ({action.upper()})...")
+    print(f"[{active}] - Wait for results ({action.upper()})...")
 
     return iq.check_win_v4(id)
 
@@ -201,7 +201,7 @@ def trade_result(iq: object, profit: float, active: str)-> tuple:
     return (True, iq.get_balance())
 
 
-def trade_result_crypto(iq: object, profit: float, active: str)-> tuple:
+def trade_result_two(iq: object, profit: float, active: str)-> tuple:
     '''
     Print to the user the result of an operation, update the balance and continue the loop
     '''
@@ -211,9 +211,9 @@ def trade_result_crypto(iq: object, profit: float, active: str)-> tuple:
         print(f"[{active}] You won ${profit}")
     
     print(f'Current balance: {iq.get_balance()}')
-    sleep(120)
-
     write_is_trading(active, 0)
+    
+    sleep(180)
 
     return (True, iq.get_balance())
 
