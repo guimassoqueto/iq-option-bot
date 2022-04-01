@@ -7,9 +7,11 @@ REAL=('EURGBP' 'EURJPY' 'EURUSD' 'EURGBP-OTC' 'EURJPY-OTC' 'EURUSD-OTC')
 
 TESTE=('EURGBP' 'EURJPY' 'EURUSD' 'EURGBP-OTC' 'EURJPY-OTC' 'EURUSD-OTC' 'USDCHF' 'USDCHF-OTC' 'USDJPY' 'USDJPY-OTC' 'GBPUSD' 'GBPUSD-OTC')
 
-for ACTIVE in ${TESTE[@]};
+rm -f /home/guilherme/Desktop/iq-option-bot/probability/*;
+
+for ACTIVE in ${REAL[@]};
 do
-	/home/guilherme/Desktop/iq-option-bot/helpers/probability_v2.py $ACTIVE 60 1 1> /home/guilherme/Desktop/iq-option-bot/probability/$ACTIVE;
+	/home/guilherme/Desktop/iq-option-bot/helpers/probability_v2.py $ACTIVE 60 1 1> /home/guilherme/Desktop/iq-option-bot/probability/$ACTIVE.txt;
 done;
 
 
