@@ -9,8 +9,7 @@ TESTE=('EURGBP' 'EURJPY' 'EURUSD' 'EURGBP-OTC' 'EURJPY-OTC' 'EURUSD-OTC' 'USDCHF
 
 for ACTIVE in ${TESTE[@]};
 do
-	/home/guilherme/Desktop/iq-option-bot/helpers/probability_v2.py $ACTIVE 60 1 1> /home/guilherme/Desktop/prob/$ACTIVE.txt;
-
+	/home/guilherme/Desktop/iq-option-bot/helpers/probability_v2.py $ACTIVE 60 1 1> /home/guilherme/Desktop/iq-option-bot/probability/$ACTIVE;
 done;
 
 
