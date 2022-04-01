@@ -3,13 +3,13 @@
 from sys import argv
 from csv import writer
 from iqoptionapi.stable_api import IQ_Option
-from os import environ, getpid, getcwd
-from os.path import abspath, join
+from os import environ, getpid
 import threading
 from datetime import datetime
 from multiprocessing import Process
 from iqoptionapi.constants import ACTIVES
 from time import sleep
+from pymssql import connect
 
 expiration_mode = {
     '30': .5,
@@ -73,6 +73,16 @@ def select_active_timeframe_candlecount() -> tuple:
 def consecutive_up(last_five: list) -> bool:
     [c5, c4, c3, c2, c1] = last_five
     return c5['open'] < c5['close'] and c4['open'] < c4['close'] and c3['open'] < c3['close'] and c2['open'] < c2['close'] and c1['open'] < c1['close']
+
+
+def consecutive_up_two(last_two: list) -> bool:
+    [c2, c1] = last_two
+    return c2['open'] < c2['close'] and c1['open'] < c1['close']
+
+
+def consecutive_down_two(last_two: list) -> bool:
+    [c2, c1] = last_two
+    return c2['open'] > c2['close'] and c1['open'] > c1['close']
 
 
 def consecutive_down(last_five: list) -> bool:
@@ -159,7 +169,7 @@ def enter_operation(iq: object, active: str, action: str, balance: float, multip
     gale = 1
     if multiplier: 
         gale = 2.5 ** multiplier
-        print(f"M{multiplier + 1}")
+        # print(f"M{multiplier + 1}")
 
     price = balance * 0.0001 * gale
 
@@ -169,7 +179,7 @@ def enter_operation(iq: object, active: str, action: str, balance: float, multip
         success, id = iq.buy(price, active, action, expiration)
 
     write_is_trading(active, 1)
-    print(f"{active} - Wait for results ({action.upper()})...")
+    # print(f"[{active}] - Wait for results ({action.upper()})...")
 
     return iq.check_win_v4(id)
 
@@ -179,12 +189,40 @@ def trade_result(iq: object, profit: float, active: str)-> tuple:
     Print to the user the result of an operation, update the balance and continue the loop
     '''
     if profit < 0:
-        print(f"You lose ${profit}")
+        print(f"[{active}] You lose ${profit}")
     else:
-        print(f"You won ${profit}")
+        print(f"[{active}] You won ${profit}")
+    
+    print(f'Current balance: {iq.get_balance()}')
 
     write_is_trading(active, 0)
     sleep(360)
+
+    return (True, iq.get_balance())
+
+
+def insert_result_DB(active: str, profit: float, trying: int) -> None:
+    '''
+    Insert in the Database all the trade results
+    '''
+    conn = connect('localhost', 'SA', 'gJD2608!', "TESTDB")
+    cursor = conn.cursor(as_dict=True)
+
+    cursor.execute('INSERT INTO tblTrades(strActive, numProfitLoss, intTry, dtOperation) VALUES(%s, %d, %d, %s);', (active, profit, trying, datetime.now().strftime("%Y%m%d %H:%M")))
+    conn.commit()
+
+    conn.close()
+
+
+def trade_result_two(iq: object, profit: float, active: str, trying: int)-> tuple:
+    '''
+    Print to the user the result of an operation, update the balance and continue the loop
+    '''
+    insert_result_DB(active, profit, trying)
+    print(f'Current balance: {iq.get_balance()}')
+    write_is_trading(active, 0)
+    
+    sleep(180)
 
     return (True, iq.get_balance())
 
