@@ -131,3 +131,6 @@ dmypy.json
 #Trade files
 trades/pid/*
 trades/istrading/*
+
+# Probability texts
+probability/*
