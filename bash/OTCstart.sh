@@ -4,7 +4,7 @@ ACTIVES=('eurusd-otc' 'eurgbp-otc' 'eurjpy-otc')
 
 # Our custom function
 cust_func(){
-  /home/guilherme/Desktop/iq-option-bot/main_2seq.py $1 60 
+  /home/guilherme/Desktop/iq-option-bot/main.py $1 60 
 }
 
 # For loop 5 times

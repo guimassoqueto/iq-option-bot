@@ -10,6 +10,10 @@ from multiprocessing import Process
 from iqoptionapi.constants import ACTIVES
 from time import sleep
 from pymssql import connect
+from googleapiclient.discovery import build
+from googleapiclient.errors import HttpError
+from google.oauth2 import service_account
+from random import randint
 
 expiration_mode = {
     '30': .5,
@@ -214,15 +218,44 @@ def insert_result_DB(active: str, profit: float, trying: int) -> None:
     conn.close()
 
 
+def update_spreadsheet(balance: float) -> None:
+    '''
+    Write the new balance on google spreadsheet file.
+    '''
+    SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
+    SERVICE_ACCOUNT_FILE = '/home/guilherme/Desktop/iq-option-bot/credentials/update_spreadsheet.json'
+
+    creds = None
+    creds = service_account.Credentials.from_service_account_file(
+            SERVICE_ACCOUNT_FILE, scopes=SCOPES)
+
+    SAMPLE_SPREADSHEET_ID = '1fMgWDq8w4pBlugbXl-V7XfCTgDnyHxbYTSWbjaGPdds'
+    SAMPLE_RANGE_NAME = 'IQOPTION!E3'
+
+    try:
+        service = build('sheets', 'v4', credentials=creds)
+        sheet = service.spreadsheets()
+        sheet.values().update(spreadsheetId=SAMPLE_SPREADSHEET_ID, 
+                                        range=SAMPLE_RANGE_NAME, 
+                                        valueInputOption='USER_ENTERED', 
+                                        body={'values': [[balance]]}).execute()
+
+    except HttpError as err:
+        print(err)
+
+
 def trade_result_two(iq: object, profit: float, active: str, trying: int)-> tuple:
     '''
     Print to the user the result of an operation, update the balance and continue the loop
     '''
+    print('WIN') if profit >= 0 else print('LOSE')
+
     insert_result_DB(active, profit, trying)
-    print(f'Current balance: {iq.get_balance()}')
+    update_spreadsheet(iq.get_balance())
     write_is_trading(active, 0)
     
-    sleep(180)
+    # sleep(180) # ORIGINAL 2h
+    sleep(randint(7,13) * 60)
 
     return (True, iq.get_balance())
 
