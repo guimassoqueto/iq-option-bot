@@ -13,6 +13,7 @@ from pymssql import connect
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from google.oauth2 import service_account
+from random import randint
 
 expiration_mode = {
     '30': .5,
@@ -247,13 +248,14 @@ def trade_result_two(iq: object, profit: float, active: str, trying: int)-> tupl
     '''
     Print to the user the result of an operation, update the balance and continue the loop
     '''
-    print('WIN') if profit > 0 else print('LOSE')
+    print('WIN') if profit >= 0 else print('LOSE')
 
     insert_result_DB(active, profit, trying)
     update_spreadsheet(iq.get_balance())
     write_is_trading(active, 0)
     
-    sleep(180)
+    # sleep(180) # ORIGINAL 2h
+    sleep(randint(7,13) * 60)
 
     return (True, iq.get_balance())
 
