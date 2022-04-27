@@ -1,5 +1,4 @@
 #! /usr/bin/python3
-
 from sys import argv
 from csv import writer
 from iqoptionapi.stable_api import IQ_Option
@@ -9,7 +8,7 @@ from datetime import datetime
 from multiprocessing import Process
 from iqoptionapi.constants import ACTIVES
 from time import sleep
-from pymssql import connect
+# from pymssql import connect
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from google.oauth2 import service_account
@@ -178,6 +177,8 @@ def enter_operation(iq: object, active: str, action: str, balance: float, multip
     price = balance * 0.0001 * gale
 
     success, id = iq.buy(price, active, action, expiration)
+    
+    print(f'Entering operation [{active.upper()}]')
 
     while not success:
         success, id = iq.buy(price, active, action, expiration)
@@ -205,17 +206,17 @@ def trade_result(iq: object, profit: float, active: str)-> tuple:
     return (True, iq.get_balance())
 
 
-def insert_result_DB(active: str, profit: float, trying: int) -> None:
-    '''
-    Insert in the Database all the trade results
-    '''
-    conn = connect('localhost', 'SA', 'gJD2608!', "TESTDB")
-    cursor = conn.cursor(as_dict=True)
+# def insert_result_DB(active: str, profit: float, trying: int) -> None:
+#     '''
+#     Insert in the Database all the trade results
+#     '''
+#     conn = connect('localhost', 'SA', 'gJD2608!', "TESTDB")
+#     cursor = conn.cursor(as_dict=True)
 
-    cursor.execute('INSERT INTO tblTrades(strActive, numProfitLoss, intTry, dtOperation) VALUES(%s, %d, %d, %s);', (active, profit, trying, datetime.now().strftime("%Y%m%d %H:%M")))
-    conn.commit()
+#     cursor.execute('INSERT INTO tblTrades(strActive, numProfitLoss, intTry, dtOperation) VALUES(%s, %d, %d, %s);', (active, profit, trying, datetime.now().strftime("%Y%m%d %H:%M")))
+#     conn.commit()
 
-    conn.close()
+#     conn.close()
 
 
 def update_spreadsheet(balance: float) -> None:
@@ -248,14 +249,14 @@ def trade_result_two(iq: object, profit: float, active: str, trying: int)-> tupl
     '''
     Print to the user the result of an operation, update the balance and continue the loop
     '''
-    print('WIN') if profit >= 0 else print('LOSE')
+    print(f'WIN ${profit}') if profit >= 0 else print(f'LOSE ${profit}')
 
-    insert_result_DB(active, profit, trying)
-    update_spreadsheet(iq.get_balance())
+    # insert_result_DB(active, profit, trying)
+    # update_spreadsheet(iq.get_balance())
     write_is_trading(active, 0)
     
     # sleep(180) # ORIGINAL 2h
-    sleep(randint(7,13) * 60)
+    # sleep(randint(7,13) * 60)
 
     return (True, iq.get_balance())
 
